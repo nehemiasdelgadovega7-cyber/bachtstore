@@ -1,0 +1,10 @@
+﻿<!DOCTYPE html>
+<html><body style="font-family:Arial;max-width:400px;margin:50px auto">
+<h2>Crea tu Bodega - BachtStore</h2>
+<form method="POST">{% csrf_token %}
+<input name="nombre_bodega" placeholder="Nombre de tu bodega" required style="width:100%;padding:10px;margin:5px 0">
+<input name="ruc" placeholder="RUC (opcional)" style="width:100%;padding:10px;margin:5px 0">
+<input name="username" placeholder="Usuario para entrar" required style="width:100%;padding:10px;margin:5px 0">
+<input type="password" name="password" placeholder="Contraseña" required style="width:100%;padding:10px;margin:5px 0">
+<button style="width:100%;padding:12px;background:black;color:white;border:none">CREAR MI SISTEMA</button>
+</form></body></html>

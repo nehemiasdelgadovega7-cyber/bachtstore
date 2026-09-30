@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BACHTSTORE</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body class="bg-[#f8f7ff] min-h-screen">
+<header class="bg-white/80 backdrop-blur-xl sticky top-0 z-20 px-4 py-3 flex justify-between items-center border-b">
+ <div class="flex items-center gap-2"><div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-black">B</div><b class="tracking-widest">BACHTSTORE</b></div>
+ <div class="flex gap-3 text-violet-600"><i class="fa-solid fa-magnifying-glass"></i><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div>
+</header>
+<main class="max-w-[500px] mx-auto p-4">
+ <h1 class="text-3xl font-black mt-2">Hola <span class="text-violet-600">Nehemías</span></h1>
+ <p class="text-slate-500 text-sm">Aquí tienes el resumen de hoy • {{ total_hoy|default:0 }} vendidos</p>
+
+ <div class="grid grid-cols-3 gap-2 mt-4">
+  <div class="bg-white rounded-2xl p-3 border shadow-sm"><i class="fa-solid fa-chart-line text-violet-500"></i><p class="text-[11px] text-slate-400 mt-2 uppercase font-bold">Ventas hoy</p><p class="font-black">S/ {{ total_hoy }}</p><p class="text-[10px] text-emerald-600">{{ tickets_hoy }} tickets</p></div>
+  <div class="bg-white rounded-2xl p-3 border shadow-sm"><i class="fa-solid fa-box text-violet-500"></i><p class="text-[11px] text-slate-400 mt-2 uppercase font-bold">Stock bajo</p><p class="font-black">{{ stock_bajo|length }} prod.</p><p class="text-[10px] text-amber-600">Reposición</p></div>
+  <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-3 text-white shadow-lg"><i class="fa-solid fa-cash-register"></i><p class="text-[11px] text-emerald-100 mt-2 uppercase font-bold">Caja abierta</p><p class="font-black">S/ {{ total_hoy }}</p><p class="text-[10px]">efectivo hoy</p></div>
+ </div>
+
+ <h2 class="font-black text-center mt-6 mb-3">Acciones rápidas</h2>
+ <div class="grid grid-cols-2 gap-3">
+  <a href="/pos/" class="bg-gradient-to-br from-violet-600 to-indigo-700 rounded-2xl p-4 text-white shadow-lg shadow-violet-200"><i class="fa-solid fa-cart-plus text-xl"></i><p class="font-bold mt-6">Nueva Venta</p><p class="text-xs opacity-70">Crear pedido</p></a>
+  <a href="/admin/ventas/producto/" class="bg-black rounded-2xl p-4 text-white"><i class="fa-solid fa-boxes-stacked text-xl"></i><p class="font-bold mt-6">Inventario</p><p class="text-xs opacity-70">Gestionar stock</p></a>
+  <a href="/admin/" class="bg-white border rounded-2xl p-4"><i class="fa-solid fa-users text-violet-600 text-xl"></i><p class="font-bold mt-6 text-slate-800">Clientes</p><p class="text-xs text-slate-500">Ver clientes</p></a>
+  <a href="#" class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-4 text-white"><i class="fa-solid fa-chart-simple text-xl"></i><p class="font-bold mt-6">Reportes</p><p class="text-xs opacity-80">Analíticas</p></a>
+ </div>
+
+ <!-- ALERTA STOCK BAJO - FUNCION DIFERENTE -->
+ <div class="bg-white rounded-2xl p-4 mt-4 border shadow-sm">
+  <h3 class="font-bold flex justify-between">Stock bajo <span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">{{ stock_bajo|length }} alerta</span></h3>
+  {% for p in stock_bajo %}
+  <div class="flex justify-between items-center mt-3 text-sm border-b pb-2"><span>{{ p.nombre }} - {{ p.stock }} und.</span><a href="/admin/ventas/producto/{{ p.id }}/change/" class="text-violet-600 font-bold">Reponer</a></div>
+  {% empty %}<p class="text-sm text-slate-400 mt-2">¡Todo bien! Sin stock bajo.</p>{% endfor %}
+ </div>
+
+ <!-- GRAFICO -->
+ <div class="bg-white rounded-2xl p-4 mt-4 border shadow-sm">
+  <h3 class="font-bold mb-2">Ventas últimos 7 días</h3>
+  <canvas id="grafico" height="120"></canvas>
+ </div>
+</main>
+
+<script>
+const datos = {{ grafico|safe }};
+new Chart(document.getElementById('grafico'), {
+ type: 'line',
+ data: { labels: datos.map(d=>d.dia), datasets: [{ data: datos.map(d=>d.total), borderColor: '#7c3aed', backgroundColor: 'rgba(124,58,237,0.2)', fill: true, tension: 0.4 }] },
+ options: { plugins:{legend:{display:false}}, scales:{y:{display:false}, x:{grid:{display:false}}} }
+});
+</script>
+</body>
+</html>
