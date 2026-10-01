@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="text-4xl font-black mb-1">Dashboard</h1>
+<p class="text-gray-400 mb-6">Resumen de ventas y operaciones • Hoy, {% now "d \\d\\e F Y" %}</p>
+
+<div class="grid grid-cols-3 gap-6 mb-6">
+    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
+        <p class="text-gray-400">Ingresos</p>
+        <h2 class="text-4xl font-black mt-2">S/ {{ ingreso }}</h2>
+        <span class="bg-green-900 text-green-300 px-2 py-1 rounded-full text-sm">+12.5%</span>
+    </div>
+    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
+        <p class="text-gray-400">Productos Vendidos</p>
+        <h2 class="text-4xl font-black mt-2">{{ transacciones_hoy }}</h2>
+        <p class="text-sm text-gray-400">{{ total_productos }} productos en tienda</p>
+    </div>
+    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
+        <p class="text-gray-400">Alerta Stock Bajo</p>
+        <h2 class="text-4xl font-black mt-2">{{ stock_bajo_count }}</h2>
+        <p class="text-orange-400 text-sm">Requiere reposición</p>
+    </div>
+</div>
+
+<!-- Aquí va el gráfico, lo dejamos simple por ahora -->
+<div class="bg-[#1E1E1E] p-6 rounded-2xl">
+    <h3 class="font-bold text-xl mb-4">Productos con stock bajo</h3>
+    {% for p in productos_bajo %}
+    <div class="flex justify-between border-b border-[#2A2A2A] py-3">
+        <span>{{ p.nombre }} - Stock: {{ p.stock }}</span>
+        <span class="text-orange-500 font-bold">S/ {{ p.precio }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

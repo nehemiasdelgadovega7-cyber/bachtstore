@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html><body style="font-family:Arial;padding:20px">
+<h1>SUPER PANEL - BACHTSTORE</h1>
+<p>Solo tu ves esto. Corta el servicio al que no paga.</p>
+<table border="1" cellpadding="10" style="width:100%;border-collapse:collapse">
+<tr><th>Bodega</th><th>Dueno</th><th>Estado</th><th>Accion</th></tr>
+{% for e in empresas %}
+<tr>
+<td><b>{{ e.nombre }}</b></td>
+<td>{{ e.dueno.username }}</td>
+<td>{% if e.esta_activa %}ACTIVA{% else %}SUSPENDIDA{% endif %}</td>
+<td>
+<form method="POST">{% csrf_token %}
+<input type="hidden" name="empresa_id" value="{{ e.id }}">
+{% if e.esta_activa %}
+<button name="accion" value="suspender" style="background:red;color:white">SUSPENDER</button>
+{% else %}
+<button name="accion" value="activar" style="background:green;color:white">REACTIVAR</button>
+{% endif %}
+</form>
+</td>
+</tr>
+{% endfor %}
+</table>
+</body></html>

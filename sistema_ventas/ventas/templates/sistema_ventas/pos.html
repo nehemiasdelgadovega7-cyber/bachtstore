@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html><body style="font-family:Arial;max-width:600px;margin:20px auto">
+<h1>{{ empresa.nombre }}</h1>
+<p>Dueño: {{ request.user.username }} | <a href="/admin/logout/">Salir</a></p>
+<hr>
+<h3>Agregar mi producto</h3>
+<form method="POST">{% csrf_token %}
+<input name="nombre" placeholder="Ej: Leche Gloria" required>
+<input name="precio" type="number" step="0.01" placeholder="Precio S/" required>
+<button>Agregar</button>
+</form>
+<hr>
+<h2>Mis Productos ({{ productos.count }})</h2>
+{% for p in productos %}
+<p><b>{{ p.nombre }}</b> - S/ {{ p.precio }}</p>
+{% empty %}
+<p>Aún no tienes productos, agrega tu primero arriba.</p>
+{% endfor %}
+</body></html>
