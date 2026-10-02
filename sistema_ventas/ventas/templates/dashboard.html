@@ -1,0 +1,55 @@
+{% extends 'ventas/base.html' %}
+{% block content %}
+
+<h1 class="text-4xl font-black mb-1">Dashboard</h1>
+<p class="text-gray-400 mb-8">Resumen de ventas y operaciones • Hoy, {% now "d de F" %}</p>
+
+<div class="grid grid-cols-3 gap-6 mb-8">
+    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
+        <div class="flex justify-between">
+            <p class="text-gray-400">Ingresos</p>
+            <span class="bg-green-900/50 text-green-400 text-xs px-2 py-1 rounded-full">+12.5%</span>
+        </div>
+        <h2 class="text-4xl font-black mt-3">S/ {{ ingreso|default:"0.00" }}</h2>
+        <p class="text-xs text-gray-500 mt-2">vs. mes anterior</p>
+    </div>
+
+    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
+        <p class="text-gray-400">Productos Vendidos</p>
+        <h2 class="text-4xl font-black mt-2">{{ transacciones_hoy|default:"0" }}</h2>
+        <p class="text-sm text-gray-400">{{ total_productos }} productos en tienda</p>
+    </div>
+
+    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
+        <p class="text-gray-400">Alerta Stock Bajo</p>
+        <h2 class="text-4xl font-black mt-2 text-orange-500">{{ stock_bajo_count|default:"0" }}</h2>
+        <p class="text-orange-400 text-sm">Requiere reposición</p>
+    </div>
+</div>
+
+<div class="grid grid-cols-2 gap-6">
+    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
+        <h3 class="font-bold text-xl mb-4">Ventas últimos 7 días</h3>
+        <div class="flex items-end gap-2 h-32">
+            {% for v in ventas_7_dias %}
+            <div class="flex-1 bg-orange-500/20 rounded-t-lg text-center" style="height: {{ v.total|default:10 }}%">
+                <p class="text-[10px] mt-2">{{ v.dia }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
+        <h3 class="font-bold text-xl mb-4">Stock Bajo - Reponer Ya</h3>
+        {% for p in productos_bajo %}
+        <div class="flex justify-between border-b border-[#2A2A2A] py-3">
+            <span class="text-sm">{{ p.nombre }} - Stock: {{ p.stock }}</span>
+            <span class="text-orange-500 font-bold">S/ {{ p.precio }}</span>
+        </div>
+        {% empty %}
+        <p class="text-gray-500 text-sm">¡Todo bien! No hay stock bajo.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

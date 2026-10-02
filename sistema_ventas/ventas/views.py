@@ -1,62 +1,40 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
-from .models import Empresa, Producto
+from .models import Producto, Venta
+from django.db.models import Sum, Count
+from django.utils import timezone
+from datetime import timedelta
 
-def registro(request):
-    if request.method == 'POST':
-        nombre_bodega = request.POST['nombre_bodega']
-        ruc = request.POST.get('ruc', '')
-        username = request.POST['username']
-        password = request.POST['password']
+@login_required
+def dashboard(request):
+    productos = Producto.objects.filter(user=request.user)
+    ventas_hoy = Venta.objects.filter(user=request.user, fecha__date=timezone.now().date())
+    ingreso_hoy = ventas_hoy.aggregate(Sum('total'))['total__sum'] or 0
+    stock_bajo = productos.filter(stock__lte=5).count()
+    
+    # Para el gráfico de 7 días
+    ultimos_7_dias = []
+    for i in range(7):
+        dia = timezone.now().date() - timedelta(days=i)
+        total = Venta.objects.filter(user=request.user, fecha__date=dia).aggregate(Sum('total'))['total__sum'] or 0
+        ultimos_7_dias.append({'dia': dia.strftime('%a'), 'total': float(total)})
+    ultimos_7_dias.reverse()
 
-        # 1. Crea usuario
-        user = User.objects.create_user(username=username, password=password)
-        
-        # 2. Crea su empresa automáticamente (aislada)
-        tipo = 'FORMAL' if ruc else 'INFORMAL'
-        empresa = Empresa.objects.create(
-            nombre=nombre_bodega,
-            ruc=ruc or None,
-            tipo=tipo,
-            dueno=user
-        )
-        login(request, user)
-        return redirect('pos')
+    context = {
+        'ingreso': ingreso_hoy,
+        'total_productos': productos.count(),
+        'stock_bajo_count': stock_bajo,
+        'productos_bajo': productos.filter(stock__lte=5)[:6],
+        'mas_vendidos': productos.order_by('-stock')[:4], # temporal
+        'ventas_7_dias': ultimos_7_dias,
+        'transacciones_hoy': ventas_hoy.count()
+    }
+    return render(request, 'sistema_ventas/dashboard.html', context)
 
-    return render(request, 'registro.html')
-
-@login_required(login_url='/admin/login/')
-def pos(request):
-    mi_empresa = Empresa.objects.get(dueno=request.user)
-
-    # BLOQUEO POR NO PAGO - Si no pagó, no entra
-    if hasattr(mi_empresa, 'esta_activa') and not mi_empresa.esta_activa:
-        return render(request, 'suspendido.html')
-
-    if request.method == 'POST':
-        nombre = request.POST.get('nombre')
-        precio = request.POST.get('precio')
-        if nombre and precio:
-            Producto.objects.create(
-                empresa=mi_empresa,
-                nombre=nombre,
-                precio=precio
-            )
-        return redirect('pos')
-
-    productos = Producto.objects.filter(empresa=mi_empresa)
-    return render(request, 'pos.html', {'productos': productos, 'empresa': mi_empresa})
-
-@staff_member_required
-def super_panel(request):
-    empresas = Empresa.objects.all().order_by('-id')
-    if request.method == 'POST':
-        emp = Empresa.objects.get(id=request.POST.get('empresa_id'))
-        # Cambia de activa a suspendida y viceversa
-        emp.esta_activa = not emp.esta_activa
-        emp.save()
-        return redirect('super_panel')
-    return render(request, 'super_panel.html', {'empresas': empresas})
+@login_required
+def pos_touch(request):
+    productos = Producto.objects.filter(user=request.user)
+    categoria = request.GET.get('cat')
+    if categoria and categoria != 'Todos':
+        productos = productos.filter(categoria=categoria)
+    return render(request, 'pos_touch.html', {'productos': productos})
