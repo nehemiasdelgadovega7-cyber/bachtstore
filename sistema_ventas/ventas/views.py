@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from .models import Tienda
 
-def registro_view(request):
+def register(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
