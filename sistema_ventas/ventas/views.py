@@ -1,24 +1,25 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth import login
-from .models import Tienda, Producto, Venta
+from .models import Tienda, Producto
 from .forms import RegistroTiendaForm
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
-from django.utils import timezone
 
 def registro(request):
     if request.method == 'POST':
         form = RegistroTiendaForm(request.POST)
         if form.is_valid():
+            # Crear usuario
             user = User.objects.create_user(
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password']
             )
+            # Crear tienda con tipo de negocio - RUC es opcional y se pone adentro
             Tienda.objects.create(
                 usuario=user,
                 nombre_tienda=form.cleaned_data['nombre_tienda'],
-                ruc=form.cleaned_data['ruc']
+                tipo_negocio=form.cleaned_data['tipo_negocio'],
+                ruc=None
             )
             login(request, user)
             return redirect('dashboard')

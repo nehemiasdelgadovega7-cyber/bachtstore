@@ -1,9 +1,14 @@
 from django import forms
-from django.contrib.auth.models import User
-from .models import Tienda
 
 class RegistroTiendaForm(forms.Form):
-    username = forms.CharField(label="Usuario")
-    password = forms.CharField(label="Clave", widget=forms.PasswordInput)
-    nombre_tienda = forms.CharField(label="Nombre de tu tienda")
-    ruc = forms.CharField(label="RUC (Opcional)", required=False, max_length=11)
+    nombre_tienda = forms.CharField(max_length=100, label="Nombre del negocio")
+    tipo_negocio = forms.ChoiceField(choices=[
+        ('bodega', 'Bodega / Abarrotes'),
+        ('ferreteria', 'Ferretería'),
+        ('farmacia', 'Farmacia'),
+        ('ropa', 'Tienda de Ropa'),
+        ('restaurante', 'Restaurante'),
+        ('otro', 'Otro'),
+    ])
+    username = forms.CharField(max_length=50, label="Usuario")
+    password = forms.CharField(widget=forms.PasswordInput, label="Clave")
