@@ -42,4 +42,5 @@ def pos_touch(request):
             productos = productos.filter(categoria=categoria)
         except:
             pass
-    return render(request, 'pos_touch.html', {'productos': productos})
+   return render(request, 'sistema_ventas/pos_touch.html', {'productos': productos})
+# o si no existe, crea el archivo

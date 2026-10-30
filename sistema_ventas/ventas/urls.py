@@ -1,9 +1,11 @@
 from django.urls import path
-from django.views.generic import RedirectView
 from . import views
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='/dashboard/', permanent=False)),
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('pos/', views.pos_touch, name='pos_touch'),
+    path('', views.dashboard, name='dashboard'),
+    path('dashboard/', views.dashboard, name='dashboard2'),
+    path('pos/', views.pos_touch, name='pos'),
+    path('clientes/', views.dashboard, name='clientes'), # temporal hasta crear vista
+    path('reportes/', views.dashboard, name='reportes'),
+    path('inventario/', views.dashboard, name='inventario'),
 ]
