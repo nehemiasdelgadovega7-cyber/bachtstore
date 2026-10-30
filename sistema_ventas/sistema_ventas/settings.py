@@ -127,3 +127,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Para Render - solo se activa en internet
 # if 'DATABASE_URL' in os.environ:
 #     DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+LOGIN_URL = '/admin/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
