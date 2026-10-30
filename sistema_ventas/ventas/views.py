@@ -1,46 +1,48 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import login
+from .models import Tienda, Producto, Venta
+from .forms import RegistroTiendaForm
 from django.contrib.auth.decorators import login_required
-from .models import Producto, Venta
 from django.db.models import Sum
 from django.utils import timezone
-from datetime import timedelta
+
+def registro(request):
+    if request.method == 'POST':
+        form = RegistroTiendaForm(request.POST)
+        if form.is_valid():
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password']
+            )
+            Tienda.objects.create(
+                usuario=user,
+                nombre_tienda=form.cleaned_data['nombre_tienda'],
+                ruc=form.cleaned_data['ruc']
+            )
+            login(request, user)
+            return redirect('dashboard')
+    else:
+        form = RegistroTiendaForm()
+    return render(request, 'sistema_ventas/registro.html', {'form': form})
 
 @login_required
 def dashboard(request):
-    productos = Producto.objects.all()
-    ventas_hoy = Venta.objects.filter(fecha__date=timezone.now().date())
-    ingreso_hoy = ventas_hoy.aggregate(Sum('total'))['total__sum'] or 0
-    stock_bajo = productos.filter(stock__lte=5).count()
-    
-    ultimos_7_dias = []
-    for i in range(7):
-        dia = timezone.now().date() - timedelta(days=i)
-        total = Venta.objects.filter(fecha__date=dia).aggregate(Sum('total'))['total__sum'] or 0
-        ultimos_7_dias.append({'dia': dia.strftime('%a'), 'total': float(total)})
-    ultimos_7_dias.reverse()
+    try:
+        tienda = Tienda.objects.get(usuario=request.user)
+        if not tienda.esta_activa:
+            return render(request, 'sistema_ventas/suspendido.html')
+        productos = Producto.objects.filter(tienda=tienda)
+    except:
+        # Si eres el superusuario bachatin, no tienes tienda
+        if request.user.is_superuser:
+            return redirect('/admin/')
+        productos = Producto.objects.none()
+        tienda = None
 
     context = {
-        'ingreso': ingreso_hoy,
+        'tienda': tienda,
         'total_productos': productos.count(),
-        'stock_bajo_count': stock_bajo,
         'productos_bajo': productos.filter(stock__lte=5)[:6],
-        'mas_vendidos': productos.order_by('-stock')[:4],
-        'ventas_7_dias': ultimos_7_dias,
-        'transacciones_hoy': ventas_hoy.count()
     }
     return render(request, 'sistema_ventas/dashboard.html', context)
-
-@login_required
-def pos_touch(request):
-    productos = Producto.objects.all()
-    # Usa el dashboard que ya funciona para asegurar deploy verde
-    return render(request, 'sistema_ventas/dashboard.html', {
-        'productos': productos,
-        'ingreso': 0,
-        'total_productos': productos.count(),
-        'stock_bajo_count': 0,
-        'productos_bajo': [],
-        'mas_vendidos': productos[:4],
-        'ventas_7_dias': [],
-        'transacciones_hoy': 0
-    })
