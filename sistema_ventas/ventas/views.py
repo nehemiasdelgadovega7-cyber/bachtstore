@@ -24,17 +24,16 @@ def registro(request):
             return redirect('dashboard')
     else:
         form = RegistroTiendaForm()
-    return render(request, 'sistema_ventas/registro.html', {'form': form})
+    return render(request, 'ventas/registro.html', {'form': form})
 
 @login_required
 def dashboard(request):
     try:
         tienda = Tienda.objects.get(usuario=request.user)
         if not tienda.esta_activa:
-            return render(request, 'sistema_ventas/suspendido.html')
+            return render(request, 'ventas/suspendido.html')
         productos = Producto.objects.filter(tienda=tienda)
     except:
-        # Si eres el superusuario bachatin, no tienes tienda
         if request.user.is_superuser:
             return redirect('/admin/')
         productos = Producto.objects.none()
@@ -45,4 +44,4 @@ def dashboard(request):
         'total_productos': productos.count(),
         'productos_bajo': productos.filter(stock__lte=5)[:6],
     }
-    return render(request, 'sistema_ventas/dashboard.html', context)
+    return render(request, 'ventas/dashboard.html', context)
