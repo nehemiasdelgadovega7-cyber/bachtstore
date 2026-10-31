@@ -40,12 +40,6 @@ def login_view(request):
         else:
             return render(request, 'ventas/login.html', {'error': 'Usuario o clave incorrecta'})
     return render(request, 'ventas/login.html')
-    
-    # Si ya está logueado y solo quiere ver el login, mandalo al dashboard
-    if request.user.is_authenticated:
-        return redirect('/dashboard/')
-        
-    return render(request, 'ventas/login.html')
 
 def dashboard(request):
     if not request.user.is_authenticated:
