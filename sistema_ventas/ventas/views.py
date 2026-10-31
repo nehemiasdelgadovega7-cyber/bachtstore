@@ -30,17 +30,16 @@ def register(request):
     return render(request, 'ventas/registro.html')
 
 def login_view(request):
-    # Si manda usuario y clave, loguea al nuevo aunque haya otro abierto
     if request.method == 'POST':
-        username = request.POST.get('username')
+        username = request.POST.get('username').strip()
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
-        if user:
-            logout(request)
+        if user is not None:
             login(request, user)
-            return redirect('/dashboard/')
+            return redirect('dashboard')
         else:
             return render(request, 'ventas/login.html', {'error': 'Usuario o clave incorrecta'})
+    return render(request, 'ventas/login.html')
     
     # Si ya está logueado y solo quiere ver el login, mandalo al dashboard
     if request.user.is_authenticated:
