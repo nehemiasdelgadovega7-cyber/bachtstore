@@ -3,108 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - {{ tienda.nombre_tienda }}</title>
+    <title>{{ tienda.nombre_tienda }} - BachtStore</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <!-- Navbar -->
     <nav class="bg-white shadow-sm border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white">
-                        <i class="fas fa-store"></i>
-                    </div>
+                    <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white"><i class="fas fa-store"></i></div>
                     <span class="font-bold text-xl text-gray-800">BachtStore</span>
                 </div>
-                <div class="flex items-center gap-4">
-                    <span class="text-sm text-gray-600 hidden sm:block">{{ tienda.nombre_tienda }}</span>
-                    <a href="/salir/" class="bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">
-                        <i class="fas fa-sign-out-alt mr-1"></i> Salir
-                    </a>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-semibold text-gray-700 bg-gray-100 px-3 py-1.5 rounded-full">{{ tienda.nombre_tienda }}</span>
+                    <a href="/salir/" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-medium transition"><i class="fas fa-sign-out-alt"></i> Salir</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Saludo Dinámico -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg mb-8">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-2">
-                Hola, {{ tienda.nombre_tienda|default:request.user.username }} 👋
-            </h1>
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white shadow-lg mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-2">Hola, {{ tienda.nombre_tienda }} 👋</h1>
             <p class="text-blue-100 text-lg">
-                Bienvenido a tu panel de <span class="font-semibold text-white">{{ tienda.tipo_negocio|default:"tu negocio" }}</span>
-                {% if tienda.direccion %} • {{ tienda.direccion }}{% endif %}
+                {{ tienda.tipo_negocio }}{% if tienda.direccion %} • {{ tienda.direccion }}{% endif %}
             </p>
-            {% if tienda.ruc %}
-            <p class="text-blue-200 text-sm mt-1">RUC: {{ tienda.ruc }}</p>
-            {% endif %}
+            {% if tienda.ruc %}<p class="text-blue-200 text-sm mt-1">RUC: {{ tienda.ruc }}</p>{% endif %}
         </div>
 
-        <!-- Stats -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-white rounded-xl p-6 shadow-sm border">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Productos</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
-                        <i class="fas fa-box"></i>
-                    </div>
-                </div>
+                <p class="text-sm text-gray-500">Productos totales</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">{{ total_productos|default:0 }}</p>
+                <p class="text-xs text-gray-400 mt-2">{{ stock_bajo|default:0 }} con stock bajo</p>
             </div>
             <div class="bg-white rounded-xl p-6 shadow-sm border">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Ventas hoy</p>
-                        <p class="text-2xl font-bold text-gray-800 mt-1">S/ 0.00</p>
-                    </div>
-                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-xl">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                </div>
+                <p class="text-sm text-gray-500">Ventas hoy</p>
+                <p class="text-3xl font-bold text-gray-800 mt-1">S/ 0.00</p>
+                <p class="text-xs text-green-600 mt-2">Aún sin ventas</p>
             </div>
             <div class="bg-white rounded-xl p-6 shadow-sm border">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500">Tienda</p>
-                        <p class="text-lg font-bold text-gray-800 mt-1 truncate">{{ tienda.nombre_tienda }}</p>
-                    </div>
-                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl">
-                        <i class="fas fa-user"></i>
-                    </div>
-                </div>
+                <p class="text-sm text-gray-500">Usuario</p>
+                <p class="text-lg font-bold text-gray-800 mt-1">@{{ request.user.username }}</p>
+                <p class="text-xs text-gray-400 mt-2">Dueño de la tienda</p>
             </div>
         </div>
 
-        <!-- Acciones -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <a href="#" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md hover:border-blue-200 transition text-left">
+            <a href="/productos/" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md hover:border-blue-200 transition">
                 <i class="fas fa-plus-circle text-blue-600 text-2xl mb-3"></i>
                 <h3 class="font-semibold text-gray-800">Agregar Producto</h3>
-                <p class="text-sm text-gray-500 mt-1">Añade stock a tu tienda</p>
+                <p class="text-sm text-gray-500 mt-1">Añade stock</p>
             </a>
-            <a href="#" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md hover:border-blue-200 transition text-left">
-                <i class="fas fa-list text-indigo-600 text-2xl mb-3"></i>
+            <a href="/productos/" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition">
+                <i class="fas fa-boxes text-indigo-600 text-2xl mb-3"></i>
                 <h3 class="font-semibold text-gray-800">Ver Inventario</h3>
-                <p class="text-sm text-gray-500 mt-1">Gestiona tus productos</p>
+                <p class="text-sm text-gray-500 mt-1">{{ total_productos }} productos</p>
             </a>
-            <a href="#" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md hover:border-blue-200 transition text-left">
+            <a href="#" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition">
                 <i class="fas fa-cash-register text-green-600 text-2xl mb-3"></i>
                 <h3 class="font-semibold text-gray-800">Nueva Venta</h3>
-                <p class="text-sm text-gray-500 mt-1">Registra una venta</p>
+                <p class="text-sm text-gray-500 mt-1">Próximamente</p>
             </a>
-            <a href="#" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md hover:border-blue-200 transition text-left">
-                <i class="fas fa-chart-line text-orange-600 text-2xl mb-3"></i>
-                <h3 class="font-semibold text-gray-800">Reportes</h3>
-                <p class="text-sm text-gray-500 mt-1">Ve tus ganancias</p>
+            <a href="/admin/" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md transition">
+                <i class="fas fa-cog text-gray-600 text-2xl mb-3"></i>
+                <h3 class="font-semibold text-gray-800">Configurar Tienda</h3>
+                <p class="text-sm text-gray-500 mt-1">Editar datos</p>
             </a>
         </div>
-
-        <p class="text-center text-gray-400 text-sm mt-12">Logueado como @{{ request.user.username }}</p>
     </div>
 </body>
 </html>

@@ -1,12 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import login, logout, authenticate
-from .models import Tienda
+from django.contrib.auth.decorators import login_required
+from .models import Tienda, Producto
 
 def register(request):
     if request.user.is_authenticated:
-        return redirect('/dashboard/')
-        
+        return redirect('dashboard')
     if request.method == 'POST':
         username = request.POST.get('username','').strip().lower()
         password = request.POST.get('password','').strip()
@@ -14,51 +14,52 @@ def register(request):
         tipo_negocio = request.POST.get('tipo_negocio','').strip()
         ruc = request.POST.get('ruc','').strip()
         direccion = request.POST.get('direccion','').strip()
-
-        # Guardamos los datos para no borrarlos si hay error
         datos = request.POST
-
-        if not username or not password or not nombre_tienda:
-            return render(request, 'ventas/registro.html', {'error': 'Completa todos los campos obligatorios', 'datos': datos})
-
         if User.objects.filter(username=username).exists():
-            return render(request, 'ventas/registro.html', {'error': f'El usuario "{username}" ya existe, usa otro o entra aquí', 'datos': datos})
-
+            return render(request, 'ventas/registro.html', {'error': f'El usuario {username} ya existe', 'datos': datos})
         user = User.objects.create_user(username=username, password=password)
-        Tienda.objects.create(
-            usuario=user,
-            nombre_tienda=nombre_tienda,
-            tipo_negocio=tipo_negocio,
-            ruc=ruc if ruc else None,
-            direccion=direccion
-        )
+        Tienda.objects.create(usuario=user, nombre_tienda=nombre_tienda, tipo_negocio=tipo_negocio, ruc=ruc, direccion=direccion)
         login(request, user)
-        return redirect('/dashboard/')
-
+        return redirect('dashboard')
     return render(request, 'ventas/registro.html')
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
     if request.method == 'POST':
-        username = request.POST.get('username').strip()
+        username = request.POST.get('username','').strip().lower()
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
-        if user is not None:
+        if user:
             login(request, user)
             return redirect('dashboard')
-        else:
-            return render(request, 'ventas/login.html', {'error': 'Usuario o clave incorrecta'})
+        return render(request, 'ventas/login.html', {'error': 'Usuario o clave incorrecta'})
     return render(request, 'ventas/login.html')
 
+@login_required(login_url='/login/')
 def dashboard(request):
-    if not request.user.is_authenticated:
-        return redirect('/login/')
-    
-    try:
-        tienda = Tienda.objects.get(usuario=request.user)
-    except Tienda.DoesNotExist:
-        tienda = None
-    
-    return render(request, 'ventas/dashboard.html', {'tienda': tienda})
+    tienda = get_object_or_404(Tienda, usuario=request.user)
+    productos = Producto.objects.filter(tienda=tienda)
+    total_productos = productos.count()
+    stock_bajo = productos.filter(stock__lte=5).count()
+    context = {
+        'tienda': tienda,
+        'total_productos': total_productos,
+        'stock_bajo': stock_bajo,
+    }
+    return render(request, 'ventas/dashboard.html', context)
+
+@login_required(login_url='/login/')
+def productos_view(request):
+    tienda = get_object_or_404(Tienda, usuario=request.user)
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        precio_venta = request.POST.get('precio_venta')
+        stock = request.POST.get('stock')
+        Producto.objects.create(tienda=tienda, nombre=nombre, precio_venta=precio_venta, stock=stock)
+        return redirect('productos')
+    productos = Producto.objects.filter(tienda=tienda).order_by('-id')
+    return render(request, 'ventas/productos.html', {'tienda': tienda, 'productos': productos})
 
 def salir_view(request):
     logout(request)
@@ -69,7 +70,7 @@ def home(request):
         return redirect('/dashboard/')
     return redirect('/login/')
 
-# Alias para que tus urls.py no fallen
+# alias
 registro = register
 login_tienda = login_view
 salir_tienda = salir_view
