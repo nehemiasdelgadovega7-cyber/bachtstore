@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from .models import Tienda
 
 def register(request):
@@ -24,22 +24,22 @@ def register(request):
             direccion=direccion
         )
         login(request, user)
-        return redirect('dashboard')
+        return redirect('/dashboard/')
 
     return render(request, 'ventas/registro.html')
 
 def dashboard(request):
+    if not request.user.is_authenticated:
+        return redirect('/')
     return render(request, 'ventas/dashboard.html')
-
-registro = register
-from django.contrib.auth import logout
-from django.shortcuts import redirect
 
 def salir_view(request):
     logout(request)
     return redirect('/')
+
 def home(request):
-    # Esta es tu pagina principal, te manda al dashboard si ya entraste
     if request.user.is_authenticated:
         return redirect('/dashboard/')
-    return render(request, 'base.html')
+    return redirect('/registro/')
+
+registro = register
