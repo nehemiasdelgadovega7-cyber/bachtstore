@@ -40,12 +40,10 @@ def login_view(request):
 def dashboard(request):
     tienda = get_object_or_404(Tienda, usuario=request.user)
     productos = Producto.objects.filter(tienda=tienda)
-    total_productos = productos.count()
-    stock_bajo = productos.filter(stock__lte=5).count()
     context = {
         'tienda': tienda,
-        'total_productos': total_productos,
-        'stock_bajo': stock_bajo,
+        'total_productos': productos.count(),
+        'stock_bajo': productos.filter(stock__lte=5).count(),
     }
     return render(request, 'ventas/dashboard.html', context)
 
@@ -54,8 +52,8 @@ def productos_view(request):
     tienda = get_object_or_404(Tienda, usuario=request.user)
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
-        precio_venta = request.POST.get('precio_venta')
-        stock = request.POST.get('stock')
+        precio_venta = request.POST.get('precio_venta') or 0
+        stock = request.POST.get('stock') or 0
         Producto.objects.create(tienda=tienda, nombre=nombre, precio_venta=precio_venta, stock=stock)
         return redirect('productos')
     productos = Producto.objects.filter(tienda=tienda).order_by('-id')
@@ -70,7 +68,6 @@ def home(request):
         return redirect('/dashboard/')
     return redirect('/login/')
 
-# alias
 registro = register
 login_tienda = login_view
 salir_tienda = salir_view
