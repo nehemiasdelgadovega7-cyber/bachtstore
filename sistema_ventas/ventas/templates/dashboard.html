@@ -1,55 +1,110 @@
-{% extends 'ventas/base.html' %}
-{% block content %}
-
-<h1 class="text-4xl font-black mb-1">Dashboard</h1>
-<p class="text-gray-400 mb-8">Resumen de ventas y operaciones • Hoy, {% now "d de F" %}</p>
-
-<div class="grid grid-cols-3 gap-6 mb-8">
-    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
-        <div class="flex justify-between">
-            <p class="text-gray-400">Ingresos</p>
-            <span class="bg-green-900/50 text-green-400 text-xs px-2 py-1 rounded-full">+12.5%</span>
-        </div>
-        <h2 class="text-4xl font-black mt-3">S/ {{ ingreso|default:"0.00" }}</h2>
-        <p class="text-xs text-gray-500 mt-2">vs. mes anterior</p>
-    </div>
-
-    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
-        <p class="text-gray-400">Productos Vendidos</p>
-        <h2 class="text-4xl font-black mt-2">{{ transacciones_hoy|default:"0" }}</h2>
-        <p class="text-sm text-gray-400">{{ total_productos }} productos en tienda</p>
-    </div>
-
-    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
-        <p class="text-gray-400">Alerta Stock Bajo</p>
-        <h2 class="text-4xl font-black mt-2 text-orange-500">{{ stock_bajo_count|default:"0" }}</h2>
-        <p class="text-orange-400 text-sm">Requiere reposición</p>
-    </div>
-</div>
-
-<div class="grid grid-cols-2 gap-6">
-    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
-        <h3 class="font-bold text-xl mb-4">Ventas últimos 7 días</h3>
-        <div class="flex items-end gap-2 h-32">
-            {% for v in ventas_7_dias %}
-            <div class="flex-1 bg-orange-500/20 rounded-t-lg text-center" style="height: {{ v.total|default:10 }}%">
-                <p class="text-[10px] mt-2">{{ v.dia }}</p>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - {{ tienda.nombre_tienda }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <span class="font-bold text-xl text-gray-800">BachtStore</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-600 hidden sm:block">{{ tienda.nombre_tienda }}</span>
+                    <a href="/salir/" class="bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">
+                        <i class="fas fa-sign-out-alt mr-1"></i> Salir
+                    </a>
+                </div>
             </div>
-            {% endfor %}
         </div>
-    </div>
+    </nav>
 
-    <div class="bg-[#1E1E1E] p-6 rounded-2xl border border-[#2A2A2A]">
-        <h3 class="font-bold text-xl mb-4">Stock Bajo - Reponer Ya</h3>
-        {% for p in productos_bajo %}
-        <div class="flex justify-between border-b border-[#2A2A2A] py-3">
-            <span class="text-sm">{{ p.nombre }} - Stock: {{ p.stock }}</span>
-            <span class="text-orange-500 font-bold">S/ {{ p.precio }}</span>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Saludo Dinámico -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-2">
+                Hola, {{ tienda.nombre_tienda|default:request.user.username }} 👋
+            </h1>
+            <p class="text-blue-100 text-lg">
+                Bienvenido a tu panel de <span class="font-semibold text-white">{{ tienda.tipo_negocio|default:"tu negocio" }}</span>
+                {% if tienda.direccion %} • {{ tienda.direccion }}{% endif %}
+            </p>
+            {% if tienda.ruc %}
+            <p class="text-blue-200 text-sm mt-1">RUC: {{ tienda.ruc }}</p>
+            {% endif %}
         </div>
-        {% empty %}
-        <p class="text-gray-500 text-sm">¡Todo bien! No hay stock bajo.</p>
-        {% endfor %}
-    </div>
-</div>
 
-{% endblock %}
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-xl p-6 shadow-sm border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Productos</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-1">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-box"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-sm border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Ventas hoy</p>
+                        <p class="text-2xl font-bold text-gray-800 mt-1">S/ 0.00</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-sm border">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500">Tienda</p>
+                        <p class="text-lg font-bold text-gray-800 mt-1 truncate">{{ tienda.nombre_tienda }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <a href="#" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md hover:border-blue-200 transition text-left">
+                <i class="fas fa-plus-circle text-blue-600 text-2xl mb-3"></i>
+                <h3 class="font-semibold text-gray-800">Agregar Producto</h3>
+                <p class="text-sm text-gray-500 mt-1">Añade stock a tu tienda</p>
+            </a>
+            <a href="#" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md hover:border-blue-200 transition text-left">
+                <i class="fas fa-list text-indigo-600 text-2xl mb-3"></i>
+                <h3 class="font-semibold text-gray-800">Ver Inventario</h3>
+                <p class="text-sm text-gray-500 mt-1">Gestiona tus productos</p>
+            </a>
+            <a href="#" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md hover:border-blue-200 transition text-left">
+                <i class="fas fa-cash-register text-green-600 text-2xl mb-3"></i>
+                <h3 class="font-semibold text-gray-800">Nueva Venta</h3>
+                <p class="text-sm text-gray-500 mt-1">Registra una venta</p>
+            </a>
+            <a href="#" class="bg-white rounded-xl p-6 shadow-sm border hover:shadow-md hover:border-blue-200 transition text-left">
+                <i class="fas fa-chart-line text-orange-600 text-2xl mb-3"></i>
+                <h3 class="font-semibold text-gray-800">Reportes</h3>
+                <p class="text-sm text-gray-500 mt-1">Ve tus ganancias</p>
+            </a>
+        </div>
+
+        <p class="text-center text-gray-400 text-sm mt-12">Logueado como @{{ request.user.username }}</p>
+    </div>
+</body>
+</html>
