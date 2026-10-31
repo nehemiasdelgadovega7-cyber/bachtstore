@@ -4,16 +4,25 @@ from django.contrib.auth import login, logout, authenticate
 from .models import Tienda
 
 def register(request):
+    if request.user.is_authenticated:
+        return redirect('/dashboard/')
+        
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        nombre_tienda = request.POST.get('nombre_tienda')
-        tipo_negocio = request.POST.get('tipo_negocio')
-        ruc = request.POST.get('ruc')
-        direccion = request.POST.get('direccion')
+        username = request.POST.get('username','').strip().lower()
+        password = request.POST.get('password','').strip()
+        nombre_tienda = request.POST.get('nombre_tienda','').strip()
+        tipo_negocio = request.POST.get('tipo_negocio','').strip()
+        ruc = request.POST.get('ruc','').strip()
+        direccion = request.POST.get('direccion','').strip()
+
+        # Guardamos los datos para no borrarlos si hay error
+        datos = request.POST
+
+        if not username or not password or not nombre_tienda:
+            return render(request, 'ventas/registro.html', {'error': 'Completa todos los campos obligatorios', 'datos': datos})
 
         if User.objects.filter(username=username).exists():
-            return render(request, 'ventas/registro.html', {'error': 'El usuario ya existe'})
+            return render(request, 'ventas/registro.html', {'error': f'El usuario "{username}" ya existe, usa otro o entra aquí', 'datos': datos})
 
         user = User.objects.create_user(username=username, password=password)
         Tienda.objects.create(
@@ -23,7 +32,6 @@ def register(request):
             ruc=ruc if ruc else None,
             direccion=direccion
         )
-        logout(request)
         login(request, user)
         return redirect('/dashboard/')
 
