@@ -32,3 +32,9 @@ def dashboard(request):
     return render(request, 'ventas/dashboard.html')
 
 registro = register
+from django.contrib.auth import logout
+from django.shortcuts import redirect
+
+def salir_view(request):
+    logout(request)
+    return redirect('/')
