@@ -1,40 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro - BachtStore</title>
-<style>
-body{font-family:Arial;background:#f4f6f9;display:flex;justify-content:center;padding:20px}
-.card{background:white;padding:25px;border-radius:15px;width:100%;max-width:400px;box-shadow:0 5px 20px rgba(0,0,0,0.1)}
-input,select{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:8px;box-sizing:border-box}
-button{width:100%;padding:12px;background:#6c5ce7;color:white;border:none;border-radius:8px;font-size:16px;margin-top:10px}
-small{color:#666}
-</style>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div class="card">
-<h2>Crear tu tienda</h2>
-<p><small>Para bodegas, ferreterías, farmacias, ropa, etc.</small></p>
-{% if error %}<p style="color:red">{{error}}</p>{% endif %}
-<form method="post">{% csrf_token %}
-<input name="nombre_tienda" placeholder="Nombre de tu negocio" required>
-<select name="tipo_negocio" required>
-<option value="bodega">Bodega / Abarrotes</option>
-<option value="ferreteria">Ferretería</option>
-<option value="farmacia">Farmacia</option>
-<option value="ropa">Tienda de Ropa</option>
-<option value="restaurante">Restaurante</option>
-<option value="barberia">Barbería / Salón</option>
-<option value="otro">Otro negocio</option>
-</select>
-<input name="ruc" placeholder="RUC (Opcional - solo si tienes)" maxlength="11">
-<input name="direccion" placeholder="Dirección (opcional)">
-<input name="username" placeholder="Usuario para entrar" required>
-<input name="password" type="password" placeholder="Contraseña" required>
-<button type="submit">Crear Mi Tienda</button>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen py-10">
+<div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+<h2 class="text-2xl font-bold text-center mb-6">Crea tu tienda</h2>
+
+{% if error %}
+<div class="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4 text-center">{{ error }}</div>
+{% endif %}
+
+<form method="POST">
+{% csrf_token %}
+<input type="text" name="username" placeholder="Usuario (ej: abimotos)" required class="w-full p-3 border rounded-lg mb-3">
+<input type="text" name="nombre_tienda" placeholder="Nombre de tu tienda" required class="w-full p-3 border rounded-lg mb-3">
+<input type="text" name="tipo_negocio" placeholder="Tipo de negocio" required class="w-full p-3 border rounded-lg mb-3">
+<input type="text" name="ruc" placeholder="RUC (opcional)" class="w-full p-3 border rounded-lg mb-3">
+<input type="text" name="direccion" placeholder="Dirección" class="w-full p-3 border rounded-lg mb-3">
+<input type="password" name="password" placeholder="Crea tu clave" required class="w-full p-3 border rounded-lg mb-4">
+<button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700">Crear tienda</button>
 </form>
-<p><small>¿Tienes RUC? Puedes ponerlo ahora o después adentro en Configuración > Mi Negocio</small></p>
+
+<p class="text-center text-sm mt-6 text-gray-500">¿Ya tienes tienda? <a href="/login/" class="text-blue-600 font-semibold">Entra aquí</a></p>
 </div>
 </body>
 </html>
