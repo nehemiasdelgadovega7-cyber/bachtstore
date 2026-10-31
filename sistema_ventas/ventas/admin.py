@@ -1,11 +1,18 @@
 from django.contrib import admin
-from .models import Tienda, Producto, Venta
+from .models import Tienda, Producto
 
-@admin.register(Tienda)
-class TiendaAdmin(admin.ModelAdmin):
-    list_display = ('nombre_tienda', 'usuario', 'ruc', 'esta_activa', 'fecha_pago', 'creado')
-    list_filter = ('esta_activa',)
-    search_fields = ('nombre_tienda', 'ruc', 'usuario__username')
+# Intenta registrar Venta si existe, si no, no pasa nada
+try:
+    from .models import Venta
+    admin.site.register(Venta)
+except ImportError:
+    pass
 
+try:
+    from .models import DetalleVenta
+    admin.site.register(DetalleVenta)
+except ImportError:
+    pass
+
+admin.site.register(Tienda)
 admin.site.register(Producto)
-admin.site.register(Venta)
