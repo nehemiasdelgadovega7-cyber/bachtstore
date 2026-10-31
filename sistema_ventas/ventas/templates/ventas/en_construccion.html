@@ -1,0 +1,3 @@
+{% extends 'ventas/base.html' %}{% block content %}
+<div class="min-h-screen flex items-center justify-center p-6"><div class="bg-[#15151f] border border-white/10 rounded-[32px] p-10 text-center max-w-md w-full"><div class="w-20 h-20 bg-violet-600/20 rounded-full flex items-center justify-center mx-auto text-3xl mb-4">{{ icono|default:"⚙️" }}</div><h1 class="text-3xl font-black">{{ titulo }}</h1><p class="text-gray-400 mt-2">Módulo funcionando. Botón activo. Aquí irá el formulario SUNAT completo.</p><a href="/dashboard/" class="mt-6 inline-block w-full bg-white text-black py-4 rounded-2xl font-black">Volver al Dashboard</a></div></div>
+{% endblock %}

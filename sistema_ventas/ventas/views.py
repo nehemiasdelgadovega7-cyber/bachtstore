@@ -36,20 +36,14 @@ def login_view(request):
         return render(request, 'ventas/login.html', {'error': 'Usuario o clave incorrecta'})
     return render(request, 'ventas/login.html')
 
-@login_required(login_url='/login/')
+@login_required
 def dashboard(request):
-    tienda = get_object_or_404(Tienda, usuario=request.user)
-    productos = Producto.objects.filter(tienda=tienda)
-    context = {
-        'tienda': tienda,
-        'total_productos': productos.count(),
-        'stock_bajo': productos.filter(stock__lte=5).count(),
-    }
-    return render(request, 'ventas/dashboard.html', context)
+    tienda, created = Tienda.objects.get_or_create(usuario=request.user, defaults={'nombre_tienda': 'Mi Tienda BachtStore'})
+    return render(request, 'ventas/dashboard.html', {'tienda': tienda})
 
 @login_required(login_url='/login/')
 def productos_view(request):
-    tienda = get_object_or_404(Tienda, usuario=request.user)
+    tienda, created = Tienda.objects.get_or_create(usuario=request.user, defaults={'nombre_tienda': 'Mi Tienda BachtStore'})
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
         precio_venta = request.POST.get('precio_venta') or 0
@@ -67,6 +61,25 @@ def home(request):
     if request.user.is_authenticated:
         return redirect('/dashboard/')
     return redirect('/login/')
+
+# --- BOTONES NUEVOS PARA QUE TODO FUNCIONE ---
+def nueva_factura(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Nueva Factura'})
+def nueva_boleta(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Nueva Boleta'})
+def nuevo_ticket(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Nuevo Ticket'})
+def nueva_cotizacion(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Nueva Cotización'})
+def busqueda_documentos(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Búsqueda de Documentos'})
+def nuevo_producto(r): return redirect('/productos/')
+def ver_inventarios(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Ver Inventarios'})
+def categorias_view(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Categorías'})
+def kardex_view(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Kardex'})
+def mis_cajas(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Mis Cajas'})
+def historial_caja(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Historial de Caja'})
+def clientes_view(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Clientes'})
+
+@login_required
+def configuracion_view(r):
+    tienda, created = Tienda.objects.get_or_create(usuario=r.user, defaults={'nombre_tienda': 'Mi Tienda BachtStore'})
+    return render(r, 'ventas/configuracion.html', {'tienda': tienda})
 
 registro = register
 login_tienda = login_view

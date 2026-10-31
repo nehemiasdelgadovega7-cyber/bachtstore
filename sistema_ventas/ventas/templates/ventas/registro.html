@@ -1,51 +1,14 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crear tu tienda - BachtStore</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center min-h-screen py-10 px-4">
-<div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
-  <div class="text-center mb-6">
-    <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 text-white font-bold text-xl">B</div>
-    <h2 class="text-2xl font-bold text-gray-800">Crea tu tienda</h2>
-    <p class="text-sm text-gray-500 mt-1">Como SmartClick, cada cliente con su propia caja</p>
+{% extends 'ventas/base.html' %}{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-600 to-[#0a0a0f] p-4">
+  <div class="bg-white text-black rounded-[32px] p-8 w-full max-w-sm shadow-2xl">
+    <h1 class="text-3xl font-black text-center">Crear Tienda</h1><p class="text-center text-gray-500 mb-6">BachtStore PRO 2026</p>
+    {% if error %}<div class="bg-red-100 text-red-600 p-3 rounded-xl mb-4 text-sm">{{ error }}</div>{% endif %}
+    <form method="POST" class="space-y-4">{% csrf_token %}
+      <input name="username" placeholder="Nombre de tu tienda (ej: motoabi)" required class="w-full p-4 bg-gray-100 rounded-2xl">
+      <input name="password" type="password" placeholder="Crea una clave" required class="w-full p-4 bg-gray-100 rounded-2xl">
+      <button class="w-full bg-violet-600 text-white p-4 rounded-2xl font-black">Crear y Entrar →</button>
+    </form>
+    <a href="/login/" class="block text-center mt-4 font-bold">Ya tengo cuenta</a>
   </div>
-
-  {% if error %}
-  <div class="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg text-sm mb-4 text-center">{{ error }}</div>
-  {% endif %}
-
-  <form method="POST" autocomplete="off">
-    {% csrf_token %}
-    <label class="text-xs font-semibold text-gray-600">Usuario para entrar</label>
-    <input type="text" name="username" value="{{ datos.username }}" placeholder="Ej: abimotos" required class="w-full p-3 border border-gray-200 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500 outline-none">
-    
-    <label class="text-xs font-semibold text-gray-600">Nombre de tu tienda</label>
-    <input type="text" name="nombre_tienda" value="{{ datos.nombre_tienda }}" placeholder="Ej: MOTO REPUESTOS ABI" required class="w-full p-3 border rounded-lg mb-3">
-    
-    <div class="grid grid-cols-2 gap-3">
-      <div>
-        <label class="text-xs font-semibold text-gray-600">Tipo negocio</label>
-        <input type="text" name="tipo_negocio" value="{{ datos.tipo_negocio }}" placeholder="Venta de repuestos" required class="w-full p-3 border rounded-lg mb-3">
-      </div>
-      <div>
-        <label class="text-xs font-semibold text-gray-600">RUC (opcional)</label>
-        <input type="text" name="ruc" value="{{ datos.ruc }}" placeholder="10..." class="w-full p-3 border rounded-lg mb-3">
-      </div>
-    </div>
-
-    <label class="text-xs font-semibold text-gray-600">Dirección</label>
-    <input type="text" name="direccion" value="{{ datos.direccion }}" placeholder="Ej: Av. Perú 123" class="w-full p-3 border rounded-lg mb-3">
-    
-    <label class="text-xs font-semibold text-gray-600">Crea tu clave</label>
-    <input type="password" name="password" placeholder="Mínimo 4 caracteres" required class="w-full p-3 border rounded-lg mb-4">
-
-    <button type="submit" class="w-full bg-blue-600 text-white p-3.5 rounded-xl font-bold hover:bg-blue-700 shadow-lg shadow-blue-200 transition">Crear mi tienda gratis</button>
-  </form>
-
-  <p class="text-center text-sm mt-6 text-gray-500">¿Ya tienes tienda? <a href="/login/" class="text-blue-600 font-bold hover:underline">Entra aquí</a></p>
 </div>
-</body>
-</html>
+{% endblock %}

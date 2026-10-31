@@ -1,0 +1,13 @@
+{% extends 'ventas/base.html' %}{% block content %}
+<div class="max-w-6xl mx-auto p-8"><div class="flex gap-6"><div class="w-72 bg-[#15151f] rounded-2xl p-2 h-fit"><div class="bg-violet-600 p-3 rounded-xl font-bold">Datos de la Empresa</div><div class="p-3 text-gray-400">Datos de Sucursales</div><div class="p-3 text-gray-400">Cambiar Contraseña</div><div class="p-3 text-gray-400">Impresora Bluetooth</div></div>
+<div class="flex-1 bg-white text-black rounded-[24px] p-8"><h1 class="text-2xl font-black">Datos de la empresa</h1><p class="text-gray-500 text-sm mb-6">Datos que usa BachtStore para facturación</p>
+<form method="POST" class="space-y-4">{% csrf_token %}
+<div class="flex items-center gap-4"><label class="w-40 text-gray-500">RUC</label><input name="ruc" value="{{ tienda.ruc }}" class="flex-1 bg-gray-100 p-3 rounded-xl"></div>
+<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Razón Social</label><input name="razon_social" value="{{ tienda.razon_social }}" class="flex-1 bg-gray-100 p-3 rounded-xl"></div>
+<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Nombre Comercial</label><input name="nombre_comercial" value="{{ tienda.nombre_comercial }}" class="flex-1 bg-violet-50 border border-violet-200 p-3 rounded-xl"></div>
+<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Dirección</label><input name="direccion" value="{{ tienda.direccion }}" class="flex-1 bg-gray-100 p-3 rounded-xl"></div>
+<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Correo</label><input name="correo" value="{{ tienda.correo }}" class="flex-1 border p-3 rounded-xl"></div>
+<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Teléfono</label><input name="telefono" value="{{ tienda.telefono }}" class="flex-1 bg-gray-100 p-3 rounded-xl"></div>
+<button class="bg-violet-600 text-white px-8 py-3 rounded-full font-bold float-right mt-4">GUARDAR Y CARGAR LOGO</button>
+</form></div></div></div>
+{% endblock %}

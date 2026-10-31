@@ -1,27 +1,14 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Entrar - BachtStore</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-<div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-<h2 class="text-2xl font-bold text-center mb-2">Entrar a tu tienda</h2>
-<p class="text-center text-gray-500 text-sm mb-6">Bienvenido de nuevo</p>
-
-{% if error %}
-<div class="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-4 text-center">{{ error }}</div>
-{% endif %}
-
-<form method="POST">
-{% csrf_token %}
-<input type="text" name="username" placeholder="Usuario" required class="w-full p-3 border rounded-lg mb-4">
-<input type="password" name="password" placeholder="Clave" required class="w-full p-3 border rounded-lg mb-4">
-<button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg font-bold hover:bg-blue-700">Entrar</button>
-</form>
-
-<p class="text-center text-sm mt-6 text-gray-500">¿No tienes tienda? <a href="/registro/" class="text-blue-600 font-semibold">Crea una aquí</a></p>
+{% extends 'ventas/base.html' %}{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-600 to-[#0a0a0f] p-4">
+  <div class="bg-white text-black rounded-[32px] p-8 w-full max-w-sm shadow-2xl">
+    <div class="text-center mb-6"><div class="w-14 h-14 bg-black text-white rounded-2xl flex items-center justify-center mx-auto text-2xl">🏍️</div><h1 class="text-3xl font-black mt-3">BachtStore</h1><p class="text-gray-500">MOTO PARTS PRO</p></div>
+    {% if error %}<div class="bg-red-100 text-red-600 p-3 rounded-xl mb-4 text-sm font-bold">{{ error }}</div>{% endif %}
+    <form method="POST" class="space-y-4">{% csrf_token %}
+      <input name="username" placeholder="Usuario" required class="w-full p-4 bg-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-violet-600">
+      <input name="password" type="password" placeholder="Clave" required class="w-full p-4 bg-gray-100 rounded-2xl outline-none">
+      <button class="w-full bg-black text-white p-4 rounded-2xl font-black text-lg">Entrar →</button>
+    </form>
+    <a href="/registro/" class="block text-center mt-4 text-violet-600 font-bold">Crear tienda nueva</a>
+  </div>
 </div>
-</body>
-</html>
+{% endblock %}
