@@ -38,3 +38,8 @@ from django.shortcuts import redirect
 def salir_view(request):
     logout(request)
     return redirect('/')
+def home(request):
+    # Esta es tu pagina principal, te manda al dashboard si ya entraste
+    if request.user.is_authenticated:
+        return redirect('/dashboard/')
+    return render(request, 'base.html')
