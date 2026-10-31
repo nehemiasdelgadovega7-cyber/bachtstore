@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 def salir_fix(request):
     logout(request)
     request.session.flush()
-    return redirect('/login/')
+    return redirect('/')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
