@@ -30,12 +30,12 @@ def register(request):
 
 def dashboard(request):
     if not request.user.is_authenticated:
-        return redirect('/')
+        return redirect('/registro/')
     return render(request, 'ventas/dashboard.html')
 
 def salir_view(request):
     logout(request)
-    return redirect('/')
+    return redirect('/registro/')
 
 def home(request):
     if request.user.is_authenticated:
