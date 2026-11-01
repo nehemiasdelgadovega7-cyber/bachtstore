@@ -1,10 +1,68 @@
 <!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Productos</title>
-<style>body{margin:0;font-family:system-ui;background:#f4f5f9;display:flex}.sidebar{width:210px;background:#141423;color:white;padding:20px}.main{flex:1;padding:20px}.card{background:white;padding:14px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}table{width:100%;border-collapse:collapse}th{background:#f1f1f5;padding:10px}td{padding:10px;border-bottom:1px solid #eee}input{padding:10px;border:1px solid #ddd;border-radius:10px}.btn{padding:10px 16px;background:#ff6a00;color:white;border:none;border-radius:10px;font-weight:700}</style>
-</head><body>
-<div class="sidebar"><h3>BachtStore</h3><a href="{% url 'dashboard' %}" style="color:#aaa;text-decoration:none">← Dashboard</a></div>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Productos - BachtStore</title>
+<style>
+body{margin:0;font-family:system-ui;background:#f4f5f9;display:flex}
+.sidebar{width:210px;background:#141423;color:white;padding:20px;min-height:100vh}
+.sidebar a{color:#aaa;text-decoration:none;display:block;padding:10px}
+.main{flex:1;padding:20px}
+.card{background:white;padding:16px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:12px}
+table{width:100%;border-collapse:collapse}th{background:#f1f1f5;padding:10px;text-align:left;font-size:13px}td{padding:12px;border-bottom:1px solid #eee;font-size:14px}
+img.thumb{width:50px;height:50px;object-fit:cover;border-radius:10px;border:1px solid #eee}
+input,select{padding:10px;border:1px solid #ddd;border-radius:10px;width:100%;box-sizing:border-box}
+.btn{padding:11px 18px;background:#ff6a00;color:white;border:none;border-radius:10px;font-weight:700;cursor:pointer}
+.btn-black{background:#111}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center}
+.modal.active{display:flex}
+.modal .box{background:white;padding:20px;border-radius:16px;width:400px;max-width:90%}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.badge-low{background:#ffcccc;color:#900;padding:4px 8px;border-radius:20px;font-size:12px}
+.badge-ok{background:#d4edda;color:#155724;padding:4px 8px;border-radius:20px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="sidebar"><h3>BachtStore</h3><a href="{% url 'dashboard' %}">← Dashboard</a><br><br><small>Productos y Stock</small></div>
 <div class="main">
-<div style="display:flex;justify-content:space-between"><h2>Productos y Stock</h2><button class="btn" onclick="alert('Nuevo producto')">+ Nuevo Producto</button></div>
-<div class="card"><input placeholder="Buscar producto..."> <select><option>Todos</option><option>Stock Bajo</option></select>
-<table style="margin-top:12px"><tr><th>Producto</th><th>Stock</th><th>Precio</th><th>Acción</th></tr><tr><td>Filtro Yamaha</td><td style="color:red">2 - Bajo</td><td>S/ 25</td><td><button>Editar</button></td></tr><tr><td>Aceite Motul 7100</td><td>45</td><td>S/ 42</td><td><button>Editar</button></td></tr></table></div>
-</div></body></html>
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">Productos y Stock</h2><button class="btn" onclick="document.getElementById('modal').classList.add('active')">+ Nuevo Producto</button></div>
+
+<div class="card">
+<div style="display:flex;gap:10px"><input placeholder="🔍 Buscar: Filtro, aceite, cadena..." style="flex:1"><select style="width:150px"><option>Todos</option><option>Stock bajo (&lt;5)</option></select></div>
+
+<table style="margin-top:14px">
+<tr><th>Foto</th><th>Producto</th><th>Stock</th><th>Precio Compra</th><th>Precio Venta</th><th>Ganancia</th><th>Acción</th></tr>
+<tr>
+<td><img class="thumb" src="https://via.placeholder.com/50?text=Foto"></td>
+<td><b>Filtro Yamaha</b><br><small style="color:#888">FILT-YAM-001</small></td>
+<td><span class="badge-low">2 - Bajo</span></td>
+<td>S/ 15.00</td><td><b>S/ 25.00</b></td><td style="color:green">S/ 10.00</td>
+<td><button>Editar</button> <button>Eliminar</button></td>
+</tr>
+<tr>
+<td><img class="thumb" src="https://via.placeholder.com/50?text=Foto"></td>
+<td><b>Aceite Motul 7100</b><br><small>ACE-MOT-7100</small></td>
+<td><span class="badge-ok">45</span></td>
+<td>S/ 32.00</td><td><b>S/ 42.00</b></td><td style="color:green">S/ 10.00</td>
+<td><button>Editar</button> <button>Eliminar</button></td>
+</tr>
+</table>
+</div>
+</div>
+
+<div id="modal" class="modal"><div class="box">
+<h3 style="margin-top:0">Nuevo Producto con Foto</h3>
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+<label>Nombre del producto</label><input name="nombre" placeholder="Ej: Filtro Yamaha R15" required>
+<label>Código / SKU</label><input name="codigo" placeholder="Ej: FILT-001">
+<div class="grid2">
+<div><label>Precio Inicial (Compra)</label><input name="precio_compra" type="number" step="0.01" placeholder="15.00" required></div>
+<div><label>Precio Venta</label><input name="precio_venta" type="number" step="0.01" placeholder="25.00" required></div>
+</div>
+<label>Stock</label><input name="stock" type="number" placeholder="10" required>
+<label>Foto del producto</label><input name="foto" type="file" accept="image/*">
+<div style="margin-top:14px;display:flex;gap:8px">
+<button type="button" class="btn btn-black" style="flex:1" onclick="document.getElementById('modal').classList.remove('active')">Cancelar</button>
+<button type="submit" class="btn" style="flex:1">Guardar Producto</button>
+</div>
+</form>
+</div></div>
+</body></html>

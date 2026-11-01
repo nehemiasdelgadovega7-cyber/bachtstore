@@ -12,10 +12,13 @@ class Tienda(models.Model):
         return self.nombre_tienda
 
 class Producto(models.Model):
-    tienda = models.ForeignKey(Tienda, on_delete=models.CASCADE, related_name='productos')
-    nombre = models.CharField(max_length=150)
-    precio_venta = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    nombre = models.CharField(max_length=200)
     stock = models.IntegerField(default=0)
+    precio_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    precio_venta = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    foto = models.ImageField(upload_to='productos/', null=True, blank=True)
+    codigo = models.CharField(max_length=50, blank=True)
 
-    def __str__(self):
-        return self.nombre
+    @property
+    def ganancia(self):
+        return self.precio_venta - self.precio_compra
