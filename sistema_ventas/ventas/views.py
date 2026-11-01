@@ -24,16 +24,12 @@ def register(request):
     return render(request, 'ventas/registro.html')
 
 def login_view(request):
-    if request.user.is_authenticated:
-        return redirect('dashboard')
     if request.method == 'POST':
-        username = request.POST.get('username','').strip().lower()
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
+        from django.contrib.auth import authenticate, login
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
         if user:
             login(request, user)
-            return redirect('dashboard')
-        return render(request, 'ventas/login.html', {'error': 'Usuario o clave incorrecta'})
+            return redirect('/productos-stock/')
     return render(request, 'ventas/login.html')
 
 @login_required
