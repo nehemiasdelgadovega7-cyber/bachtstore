@@ -108,3 +108,31 @@ def registro_view(request):
         login(request, user)
         return redirect('/dashboard/')
     return render(request, 'ventas/registro.html')
+def crear_admin_view(request):
+    from django.contrib.auth.models import User
+    from django.http import HttpResponse
+    User.objects.filter(username='MOTOBACH-admin').delete()
+    User.objects.create_superuser('MOTOBACH-admin', '', 'bach2024')
+    return HttpResponse("✅ ADMIN CREADO: Usuario MOTOBACH-admin / Clave bach2024 - Ya puedes ir a /login/")
+
+def register(request):
+    from django.contrib.auth.models import User
+    from .models import Tienda
+    from django.shortcuts import render, redirect
+    from django.http import HttpResponse
+    from django.contrib.auth import login
+
+    if request.method == 'POST':
+        nombre_tienda = request.POST.get('nombre_tienda')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        email = request.POST.get('email','')
+
+        if User.objects.filter(username=username).exists():
+            return HttpResponse("Ese usuario ya existe <a href='/registro/'>volver</a>")
+        
+        user = User.objects.create_user(username=username, password=password, email=email)
+        Tienda.objects.create(usuario=user, nombre=nombre_tienda)
+        login(request, user)
+        return redirect('/dashboard/')
+    return render(request, 'ventas/registro.html')
