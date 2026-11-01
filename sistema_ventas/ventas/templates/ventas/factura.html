@@ -1,0 +1,3 @@
+<h2 style="color:white">Nueva Factura - {{ tienda.nombre|default:request.user.username }}</h2>
+<a href="{% url 'dashboard' %}">← Volver al Dashboard</a>
+<p>Aquí va tu formulario de factura.</p>

@@ -1,27 +1,59 @@
-{% extends 'ventas/base.html' %}{% block content %}
-<div class="min-h-screen flex">
-  <div class="w-[300px] bg-[#15151f] border-r border-white/10 p-6 flex flex-col">
-    <div class="flex items-center gap-3 mb-10"><div class="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center text-xl">🏍️</div><div><div class="font-black text-xl">BachtStore</div><div class="text-[10px] tracking-[0.3em] text-violet-400">MOTO PARTS</div></div></div>
-    <nav class="space-y-2">
-      <div class="bg-white/10 border border-violet-500/50 shadow-[0_0_20px_rgba(124,58,237,0.3)] rounded-2xl p-4 font-bold">🧾 Facturación</div>
-      <a href="/productos/" class="flex gap-3 bg-white/5 rounded-2xl p-4 hover:bg-white/10">📦 Productos y Stock</a>
-      <a href="/pos/" class="flex gap-3 bg-white/5 rounded-2xl p-4 hover:bg-white/10">🛒 Punto de Venta</a>
-      <a href="/configuracion/" class="flex gap-3 bg-white/5 rounded-2xl p-4 hover:bg-white/10">⚙️ Configuración</a>
-    </nav>
-    <div class="mt-auto bg-white/5 rounded-2xl p-4 flex items-center gap-3"><img src="https://i.pravatar.cc/100" class="w-10 h-10 rounded-full"><div><div class="font-bold text-sm">{{ request.user.username }}</div><div class="text-xs text-gray-400 truncate w-32">{{ tienda.nombre_comercial }}</div></div></div>
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - BachtStore</title>
+<style>
+body{margin:0;font-family:system-ui;background:#0e0e18;color:white;display:flex}
+.sidebar{width:220px;background:#141423;padding:20px;min-height:100vh}
+.sidebar a{color:#aaa;display:block;padding:10px 12px;text-decoration:none;border-radius:8px;margin:4px 0}
+.sidebar a.active,.sidebar a:hover{background:#1f1f35;color:white}
+.main{flex:1;padding:24px;background:#12121f}
+.card{background:#1c1c30;padding:16px;border-radius:12px}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.quick .c{padding:16px;border-radius:14px;color:#000;font-weight:600;cursor:pointer}
+.orange{background:#ff8c1a} .yellow{background:#ffde59} .blue{background:#7aa5ff}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.small{font-size:13px;color:#ccc}
+h2{margin:4px 0}
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <h3 style="margin:0">BachtStore</h3>
+  <p class="small">{{ tienda.nombre|default:request.user.username }}</p>
+  <hr style="border-color:#222;margin:15px 0">
+  <a href="{% url 'facturacion' %}">Facturación</a>
+  <a href="{% url 'productos_stock' %}">Productos y Stock</a>
+  <a href="{% url 'punto_venta' %}">Punto de Venta</a>
+  <a href="{% url 'configuracion' %}">Configuración</a>
+  <a href="{% url 'logout' %}" style="margin-top:30px;color:#ff6b6b">Salir</a>
+</div>
+
+<div class="main">
+  <p class="small">Dashboard - Overview en tiempo real</p>
+  <h2>Accesos rápidos para {{ tienda.nombre|default:request.user.username }}</h2>
+  <p class="small">Hola, {{ tienda.nombre|default:request.user.username|capfirst }} ¿qué deseas hacer hoy?</p>
+
+  <div class="quick">
+    <div class="c orange" onclick="location.href='{% url 'facturacion' %}'">Nueva Factura<br><span class="small" style="color:#333">Crear factura ahora</span></div>
+    <div class="c yellow" onclick="location.href='{% url 'productos_stock' %}'">Productos<br><span class="small" style="color:#333">Gestionar stock</span></div>
+    <div class="c blue" onclick="location.href='{% url 'punto_venta' %}'">POS<br><span class="small" style="color:#333">Iniciar venta</span></div>
   </div>
-  <div class="flex-1 p-8 bg-[#0a0a0f]">
-    <div class="flex justify-between mb-8"><div><h1 class="text-3xl font-black">Dashboard</h1><p class="text-gray-400">Overview en tiempo real</p></div><a href="/logout/" class="bg-white/10 px-6 py-3 rounded-2xl">Salir</a></div>
-    <h2 class="text-5xl font-black mb-2 leading-tight"Hola, {{ tienda.nombre_tienda|default:request.user.username }} ¿qué deseas hacer hoy?/h2><p class="text-gray-400 mb-8">Accesos rápidos para tu tienda de motos</p>
-    <div class="grid grid-cols-3 gap-6 mb-8">
-      <a href="/factura/nueva/" class="bg-gradient-to-br from-orange-400 to-orange-600 rounded-[30px] p-8 hover:scale-[1.02] transition shadow-[0_10px_40px_rgba(251,146,60,0.3)]"><div class="text-5xl mb-6">📄</div><div class="text-2xl font-black">Nueva Factura</div><div class="text-sm opacity-80">Crear factura ahora</div></a>
-      <a href="/productos/" class="bg-gradient-to-br from-yellow-300 to-amber-500 rounded-[30px] p-8 hover:scale-[1.02] transition text-black shadow-[0_10px_40px_rgba(251,191,36,0.3)]"><div class="text-5xl mb-6">📦</div><div class="text-2xl font-black">{{ total_productos }} Productos</div><div class="text-sm">Gestionar stock</div></a>
-      <a href="/pos/" class="bg-gradient-to-br from-blue-400 to-violet-600 rounded-[30px] p-8 hover:scale-[1.02] transition shadow-[0_10px_40px_rgba(96,165,250,0.3)]"><div class="text-5xl mb-6">🛒</div><div class="text-2xl font-black">POS</div><div class="text-sm opacity-80">Iniciar venta</div></a>
+
+  <div class="stats">
+    <div class="card">
+      <b>Ventas hoy</b><br>S/ 12,480<br><span class="small">↗ 18.2%</span>
+      <hr style="border-color:#222;margin:10px 0">
+      <b>Stock bajo</b><br><span class="small">7 productos</span> &nbsp; <b>Pedidos pendientes</b> <span class="small">7</span>
     </div>
-    <div class="grid grid-cols-2 gap-6">
-      <div class="bg-[#15151f] border border-white/10 rounded-[24px] p-6"><div class="text-gray-400">Ventas hoy</div><div class="text-4xl font-black mt-2">S/ 12,480</div><div class="text-violet-400 mt-1">↗ 18.2%</div><div class="mt-6 pt-6 border-t border-white/10 flex gap-10"><div><div class="font-bold">Stock bajo</div><div class="text-orange-400">{{ stock_bajo }} productos ●</div></div><div><div class="font-bold">Pedidos</div><div>7 pendientes</div></div></div></div>
-      <div class="bg-[#15151f] border border-white/10 rounded-[24px] p-6"><div class="font-bold mb-4">Más vendidos</div>{% for p in top_productos %}<div class="flex justify-between bg-white/5 rounded-xl p-3 mb-2"><span>{{ p.nombre }}</span><span class="bg-orange-500/20 text-orange-300 px-3 py-1 rounded-full text-xs">Stock {{ p.stock }}</span></div>{% empty %}<div class="bg-white/5 rounded-xl p-3 mb-2">Filtro Yamaha • 32 vendidos</div><div class="bg-white/5 rounded-xl p-3 mb-2">Pastillas Brembo • 21 vendidos</div><div class="bg-white/5 rounded-xl p-3">Cadena 520 • 18 vendidos</div>{% endfor %}</div>
+    <div class="card">
+      <b>Más vendidos</b><br>
+      <span class="small">Filtro Yamaha • 32 vendidos<br>Pastillas Brembo • 21<br>Cadena 520 • 18</span>
     </div>
   </div>
 </div>
-{% endblock %}
+</body>
+</html>
