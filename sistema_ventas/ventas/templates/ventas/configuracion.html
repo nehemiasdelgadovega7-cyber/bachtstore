@@ -1,13 +1,76 @@
-{% extends 'ventas/base.html' %}{% block content %}
-<div class="max-w-6xl mx-auto p-8"><div class="flex gap-6"><div class="w-72 bg-[#15151f] rounded-2xl p-2 h-fit"><div class="bg-violet-600 p-3 rounded-xl font-bold">Datos de la Empresa</div><div class="p-3 text-gray-400">Datos de Sucursales</div><div class="p-3 text-gray-400">Cambiar Contraseña</div><div class="p-3 text-gray-400">Impresora Bluetooth</div></div>
-<div class="flex-1 bg-white text-black rounded-[24px] p-8"><h1 class="text-2xl font-black">Datos de la empresa</h1><p class="text-gray-500 text-sm mb-6">Datos que usa BachtStore para facturación</p>
-<form method="POST" class="space-y-4">{% csrf_token %}
-<div class="flex items-center gap-4"><label class="w-40 text-gray-500">RUC</label><input name="ruc" value="{{ tienda.ruc }}" class="flex-1 bg-gray-100 p-3 rounded-xl"></div>
-<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Razón Social</label><input name="razon_social" value="{{ tienda.razon_social }}" class="flex-1 bg-gray-100 p-3 rounded-xl"></div>
-<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Nombre Comercial</label><input name="nombre_comercial" value="{{ tienda.nombre_comercial }}" class="flex-1 bg-violet-50 border border-violet-200 p-3 rounded-xl"></div>
-<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Dirección</label><input name="direccion" value="{{ tienda.direccion }}" class="flex-1 bg-gray-100 p-3 rounded-xl"></div>
-<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Correo</label><input name="correo" value="{{ tienda.correo }}" class="flex-1 border p-3 rounded-xl"></div>
-<div class="flex items-center gap-4"><label class="w-40 text-gray-500">Teléfono</label><input name="telefono" value="{{ tienda.telefono }}" class="flex-1 bg-gray-100 p-3 rounded-xl"></div>
-<button class="bg-violet-600 text-white px-8 py-3 rounded-full font-bold float-right mt-4">GUARDAR Y CARGAR LOGO</button>
-</form></div></div></div>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configuración - BachtStore</title>
+<style>
+body{margin:0;font-family:system-ui;background:#0e0e18;color:white;display:flex}
+.sidebar{width:200px;background:#141423;padding:20px}
+.tab{padding:10px 14px;border-radius:8px;cursor:pointer;margin:6px 0;background:#1c1c30;color:#aaa}
+.tab.active{background:#7a5bff;color:white}
+.main{flex:1;padding:30px}
+.panel{display:none;background:white;color:black;padding:20px;border-radius:12px;max-width:500px}
+.panel.active{display:block}
+input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:8px}
+button{background:#7a5bff;color:white;padding:12px 20px;border:none;border-radius:20px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="sidebar">
+<h3>BachtStore</h3>
+<div class="tab active" onclick="showTab(0)">Datos de la Empresa</div>
+<div class="tab" onclick="showTab(1)">Datos de Sucursales</div>
+<div class="tab" onclick="showTab(2)">Cambiar Contraseña</div>
+<div class="tab" onclick="showTab(3)">Impresora Bluetooth</div>
+<a href="{% url 'dashboard' %}" style="display:block;margin-top:20px;color:#aaa">← Dashboard</a>
+</div>
+
+<div class="main">
+<h2>Configuración</h2>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<div id="p0" class="panel active">
+<h3>Datos de la empresa</h3>
+<p>Rellena todos tus datos para facturación</p>
+<label>RUC</label><input name="ruc" value="{{ tienda.ruc|default:'' }}">
+<label>Razón Social</label><input name="razon" value="{{ tienda.razon|default:'' }}">
+<label>Nombre Comercial</label><input name="nombre" value="{{ tienda.nombre|default:request.user.username }}">
+<label>Dirección</label><input name="direccion" value="{{ tienda.direccion|default:'' }}">
+<label>Correo</label><input name="correo" value="{{ tienda.correo|default:'' }}">
+<label>Teléfono</label><input name="telefono" value="{{ tienda.telefono|default:'' }}">
+<label>Logo</label><input type="file" name="logo">
+<button type="submit">GUARDAR Y CARGAR LOGO</button>
+</div>
+
+<div id="p1" class="panel">
+<h3>Datos de Sucursales</h3>
+<input placeholder="Nombre sucursal">
+<button type="submit">Guardar Sucursal</button>
+</div>
+
+<div id="p2" class="panel">
+<h3>Cambiar Contraseña</h3>
+<input type="password" name="pass" placeholder="Nueva contraseña">
+<button type="submit">Cambiar</button>
+</div>
+
+<div id="p3" class="panel">
+<h3>Impresora Bluetooth</h3>
+<button type="button" onclick="alert('Buscando impresora...')">Conectar Impresora</button>
+</div>
+
+</form>
+</div>
+
+<script>
+function showTab(i){
+ document.querySelectorAll('.tab').forEach((t,idx)=>t.classList.toggle('active',idx==i));
+ document.querySelectorAll('.panel').forEach((p,idx)=>p.classList.toggle('active',idx==i));
+}
+</script>
+</body>
+</html>

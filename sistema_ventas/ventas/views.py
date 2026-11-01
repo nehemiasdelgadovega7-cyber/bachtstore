@@ -77,10 +77,16 @@ def historial_caja(r): return render(r, 'ventas/en_construccion.html', {'titulo'
 def clientes_view(r): return render(r, 'ventas/en_construccion.html', {'titulo':'Clientes'})
 
 @login_required
-def configuracion_view(r):
-    tienda, created = Tienda.objects.get_or_create(usuario=r.user, defaults={'nombre_tienda': 'Mi Tienda BachtStore'})
-    return render(r, 'ventas/configuracion.html', {'tienda': tienda})
-
+def configuracion_view(request):
+    # Simula guardar, si tienes modelo Tienda úsalo
+    tienda = getattr(request.user, 'tienda', None)
+    if request.method == 'POST':
+        # Aquí guardas en tu modelo
+        # tienda.ruc = request.POST.get('ruc') etc
+        # tienda.save()
+        print("DATOS RECIBIDOS:", request.POST)
+        return redirect('configuracion')
+    return render(request, 'ventas/configuracion.html', {'tienda': tienda})
 registro = register
 login_tienda = login_view
 salir_tienda = salir_view
