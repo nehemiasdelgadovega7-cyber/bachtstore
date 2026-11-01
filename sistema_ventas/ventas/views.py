@@ -37,17 +37,19 @@ def dashboard(request):
     tienda, created = Tienda.objects.get_or_create(usuario=request.user, defaults={'nombre_tienda': 'Mi Tienda BachtStore'})
     return render(request, 'ventas/dashboard.html', {'tienda': tienda})
 
-@login_required(login_url='/login/')
-def productos_view(request):
-    tienda, created = Tienda.objects.get_or_create(usuario=request.user, defaults={'nombre_tienda': 'Mi Tienda BachtStore'})
-    if request.method == 'POST':
-        nombre = request.POST.get('nombre')
-        precio_venta = request.POST.get('precio_venta') or 0
-        stock = request.POST.get('stock') or 0
-        Producto.objects.create(tienda=tienda, nombre=nombre, precio_venta=precio_venta, stock=stock)
-        return redirect('productos')
-    productos = Producto.objects.filter(tienda=tienda).order_by('-id')
-    return render(request, 'ventas/productos.html', {'tienda': tienda, 'productos': productos})
+def productos_stock_view(request):
+    from .models import Producto, Tienda
+    from django.contrib.auth.decorators import login_required
+    from django.shortcuts import render
+
+    # Si no tiene tienda, muestra todos
+    try:
+        tienda = Tienda.objects.get(usuario=request.user)
+        productos = Producto.objects.filter(tienda=tienda)
+    except:
+        productos = Producto.objects.all()
+    
+    return render(request, 'ventas/productos.html', {'productos': productos})
 
 def salir_view(request):
     logout(request)
