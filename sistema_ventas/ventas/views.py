@@ -86,3 +86,25 @@ def configuracion_view(request):
 registro = register
 login_tienda = login_view
 salir_tienda = salir_view
+def registro_view(request):
+    if request.method == 'POST':
+        from django.contrib.auth.models import User
+        from .models import Tienda
+        from django.shortcuts import redirect
+        from django.http import HttpResponse
+        
+        nombre_tienda = request.POST['nombre_tienda']
+        username = request.POST['username']
+        password = request.POST['password']
+        email = request.POST.get('email','')
+
+        if User.objects.filter(username=username).exists():
+            return HttpResponse("Ese usuario ya existe, prueba otro - <a href='/registro/'>volver</a>")
+
+        user = User.objects.create_user(username=username, password=password, email=email)
+        tienda = Tienda.objects.create(usuario=user, nombre=nombre_tienda)
+        
+        from django.contrib.auth import login
+        login(request, user)
+        return redirect('/dashboard/')
+    return render(request, 'ventas/registro.html')

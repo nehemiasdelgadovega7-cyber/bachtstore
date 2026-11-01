@@ -1,14 +1,30 @@
-{% extends 'ventas/base.html' %}{% block content %}
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-violet-600 to-[#0a0a0f] p-4">
-  <div class="bg-white text-black rounded-[32px] p-8 w-full max-w-sm shadow-2xl">
-    <h1 class="text-3xl font-black text-center">Crear Tienda</h1><p class="text-center text-gray-500 mb-6">BachtStore PRO 2026</p>
-    {% if error %}<div class="bg-red-100 text-red-600 p-3 rounded-xl mb-4 text-sm">{{ error }}</div>{% endif %}
-    <form method="POST" class="space-y-4">{% csrf_token %}
-      <input name="username" placeholder="Nombre de tu tienda (ej: motoabi)" required class="w-full p-4 bg-gray-100 rounded-2xl">
-      <input name="password" type="password" placeholder="Crea una clave" required class="w-full p-4 bg-gray-100 rounded-2xl">
-      <button class="w-full bg-violet-600 text-white p-4 rounded-2xl font-black">Crear y Entrar →</button>
-    </form>
-    <a href="/login/" class="block text-center mt-4 font-bold">Ya tengo cuenta</a>
-  </div>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear Tienda - BachtStore</title>
+<style>
+body{margin:0;background:#fafafa;font-family:system-ui;display:flex;min-height:100vh;align-items:center;justify-content:center}
+.card{width:480px;background:#fff;padding:42px;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.08);text-align:center}
+.logo{font-size:32px;font-weight:900}.logo span{color:#ff6a00}
+input{width:100%;padding:14px 16px;border:1.5px solid #e8e8e8;border-radius:12px;margin-bottom:12px;font-size:15px}
+.btn{width:100%;padding:15px;background:#ff6a00;color:#fff;border:none;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="card">
+<div class="logo">Bacht<span>Store</span></div>
+<p style="color:#888">Crea tu tienda en 30 segundos</p>
+<form method="POST">
+{% csrf_token %}
+<input name="nombre_tienda" placeholder="Nombre de tu tienda Ej: Moto Ica" required>
+<input name="username" placeholder="Usuario Ej: motoica-admin" required>
+<input name="email" placeholder="Correo (opcional)">
+<input type="password" name="password" placeholder="Crea tu contraseña" required>
+<button class="btn">Crear mi Tienda Gratis</button>
+</form>
+<p style="font-size:13px;margin-top:16px">¿Ya tienes tienda? <a href="/login/">Ingresa aquí</a></p>
 </div>
-{% endblock %}
+</body>
+</html>
