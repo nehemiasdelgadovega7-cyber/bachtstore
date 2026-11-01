@@ -1,3 +1,79 @@
-<h2 style="color:white">Nueva Factura - {{ tienda.nombre|default:request.user.username }}</h2>
-<a href="{% url 'dashboard' %}">← Volver al Dashboard</a>
-<p>Aquí va tu formulario de factura.</p>
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Facturación - BachtStore</title>
+<style>
+body{margin:0;font-family:system-ui;background:#f4f5f9;display:flex}
+.sidebar{width:210px;background:#141423;color:white;padding:20px;min-height:100vh}
+.sidebar a{color:#aaa;display:block;padding:10px;text-decoration:none;border-radius:8px}
+.sidebar a.active{background:#1f1f35;color:white}
+.main{flex:1;padding:20px}
+.card{background:white;padding:16px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:12px}
+input,select{padding:11px;border:1px solid #ddd;border-radius:10px;width:100%;box-sizing:border-box}
+.btn{padding:12px 18px;border:none;border-radius:10px;font-weight:700;cursor:pointer}
+.btn-orange{background:#ff6a00;color:white} .btn-black{background:#111;color:white}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid4{display:grid;grid-template-columns:3fr 1fr 1fr auto;gap:8px;align-items:center}
+table{width:100%;border-collapse:collapse} th{background:#f1f1f5;padding:10px;text-align:left} td{padding:10px;border-bottom:1px solid #eee}
+.badge{padding:4px 8px;border-radius:20px;font-size:12px;background:#eee}
+</style>
+</head>
+<body>
+<div class="sidebar">
+<h3 style="margin:0">BachtStore</h3><p style="font-size:12px;color:#888">{{ tienda.nombre|default:request.user.username }}</p><br>
+<a href="{% url 'dashboard' %}">Dashboard</a>
+<a class="active" href="{% url 'facturacion' %}">Facturación</a>
+<a href="{% url 'productos_stock' %}">Productos</a>
+<a href="{% url 'punto_venta' %}">POS</a>
+<a href="{% url 'configuracion' %}">Configuración</a>
+</div>
+<div class="main">
+<h2 style="margin:0">Nueva Factura</h2><p style="color:#666;font-size:13px">Emisión válida para SUNAT</p>
+
+<div class="grid2">
+<div class="card">
+<b>Cliente</b>
+<input id="doc" placeholder="RUC / DNI - Ej: 10456789012" style="margin-top:8px">
+<button class="btn btn-black" style="width:100%;margin-top:6px" onclick="alert('Buscando en SUNAT...')">🔍 Buscar en SUNAT / RENIEC</button>
+<input placeholder="Nombre / Razón Social" style="margin-top:8px">
+<input placeholder="Dirección fiscal">
+</div>
+<div class="card">
+<b>Comprobante</b>
+<select id="tipo" style="margin-top:8px">
+<option value="factura">Factura Electrónica</option>
+<option value="boleta">Boleta Electrónica</option>
+<option value="nota_credito">Nota de Crédito</option>
+<option value="nota_debito">Nota de Débito</option>
+<option value="guia">Guía de Remisión</option>
+<option value="cotizacion">Cotización</option>
+</select>
+<div class="grid2" style="margin-top:8px"><input type="date"><input value="Soles - PEN"></div>
+<div style="margin-top:8px"><span class="badge">Serie: F001-0000123</span></div>
+</div>
+</div>
+
+<div class="card">
+<b>Agregar Producto</b>
+<div class="grid4" style="margin-top:10px">
+<input placeholder="Buscar: Filtro Yamaha, aceite...">
+<input type="number" placeholder="Cant" value="1">
+<input placeholder="Precio">
+<button class="btn btn-orange">+ Agregar</button>
+</div>
+<table style="margin-top:14px"><tr><th>Producto</th><th>Cant</th><th>P.Unit</th><th>Total</th><th></th></tr>
+<tr><td colspan="5" style="text-align:center;padding:25px;color:#999">Aún no hay productos - Agrega uno arriba</td></tr>
+</table>
+</div>
+
+<div style="display:flex;justify-content:flex-end;gap:10px;align-items:center">
+<div class="card" style="margin:0">IGV 18%: S/ 0.00<br><b style="font-size:20px">Total: S/ 0.00</b></div>
+<button class="btn" style="background:#eee">Guardar Borrador</button>
+<button class="btn btn-orange" onclick="alert('Enviando a SUNAT...')">EMITIR Y ENVIAR A SUNAT</button>
+</div>
+
+</div>
+</body>
+</html>

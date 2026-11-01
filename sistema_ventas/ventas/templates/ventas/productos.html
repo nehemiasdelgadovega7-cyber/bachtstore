@@ -1,2 +1,10 @@
-<h2>Productos y Stock - {{ tienda.nombre|default:request.user.username }}</h2>
-<a href="{% url 'dashboard' %}">← Volver</a>
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Productos</title>
+<style>body{margin:0;font-family:system-ui;background:#f4f5f9;display:flex}.sidebar{width:210px;background:#141423;color:white;padding:20px}.main{flex:1;padding:20px}.card{background:white;padding:14px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,.06)}table{width:100%;border-collapse:collapse}th{background:#f1f1f5;padding:10px}td{padding:10px;border-bottom:1px solid #eee}input{padding:10px;border:1px solid #ddd;border-radius:10px}.btn{padding:10px 16px;background:#ff6a00;color:white;border:none;border-radius:10px;font-weight:700}</style>
+</head><body>
+<div class="sidebar"><h3>BachtStore</h3><a href="{% url 'dashboard' %}" style="color:#aaa;text-decoration:none">← Dashboard</a></div>
+<div class="main">
+<div style="display:flex;justify-content:space-between"><h2>Productos y Stock</h2><button class="btn" onclick="alert('Nuevo producto')">+ Nuevo Producto</button></div>
+<div class="card"><input placeholder="Buscar producto..."> <select><option>Todos</option><option>Stock Bajo</option></select>
+<table style="margin-top:12px"><tr><th>Producto</th><th>Stock</th><th>Precio</th><th>Acción</th></tr><tr><td>Filtro Yamaha</td><td style="color:red">2 - Bajo</td><td>S/ 25</td><td><button>Editar</button></td></tr><tr><td>Aceite Motul 7100</td><td>45</td><td>S/ 42</td><td><button>Editar</button></td></tr></table></div>
+</div></body></html>
